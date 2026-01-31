@@ -15,34 +15,79 @@
 
             $(document).ready(function() {
 
-                var current_socket
+                var ws
                 
                 console.log("DOG READY");
                 
                 function append_text(text) {
                     var box = document.getElementById("box")
-                    box.innerHTML = box.innerHTML + text
+                    box.innerHTML = box.innerHTML + text + "<br>"
                 }
 
-                function on_submit(event) {
+                function connect_ws(url) {
+                    return new Promise( resolve =>
+                    {
+                        ws = new WebSocket(url);
+
+                        ws.addEventListener("open", event => {
+                            console.log("Connected to WS server!");
+                            resolve();
+                        });
+
+                        ws.addEventListener("message", ( {data} ) => {
+                            var message = JSON.parse(data)
+                            console.log("WS server says: ",  message);
+
+                            append_text(`<b>${message.name}</b>: ${message.message}`)
+                        });
+                    });
+                }
+
+                
+                
+                document.getElementById("address").addEventListener("submit", event => {
+                    var address = $("form#address input").val();
+
+                    if (ws == null || address != ws.url) {
+                        append_text("<i>Connecting..</i>")
+                        connect_ws(address)
+                        append_text("<i>Connected!</i>")
+                    } else {
+                        append_text("<i>Already connected</i>")
+                    }
+
+                    
+                })
+
+                $("form#name").submit(function (event) {
+                    return false;
+                })
+                    
+                $("form#address").submit(function (event) {
+                    return false;
+                })
+
+                $("form#msg").submit(function (event) {
+
+                    var name = $("form#name input").val()
+                    if (ws == null) {
+                        append_text("<i>You need to connect to a server first</i>")
+                        return false;
+                    }
+                    if (name == "") {
+                        append_text("<i>Enter a name</i>")
+                        return false;
+                    }
 
                     var message = $("form#msg input").val();
-                    var address = $("form#address input").val();
                     $("form#msg input").val("");
 
-                    if (current_socket == null || address != current_socket.url) {
-                        append_text("<i>Connecting..</i>")
-                        current_socket = new WebSocket(address)
-                    };
-
-                    console.log(`Submit \"${message}\" to ${address}`)
-                    append_text(`<b>You</b>: ${message}`)
+                    obj = {"message": message, "name": name}
+                    console.log(`Submit \"${message}\" to ${ws.url}`)
+                    ws.send(JSON.stringify(obj))
 
                     return false;
-                }
-                
-                $("form#address").submit(on_submit)
-                $("form#msg").submit(on_submit)
+                })
 
             })
 
@@ -58,6 +103,11 @@
                 <input type="text" id="a">
             </form>
             
+            <form id="name">
+                <label for="n">Username</label>
+                <input type="text" id="n">
+            </form>
+
             <form id="msg">
                 <label for="m">Message Content</label>
                 <input type="text" id="m">
@@ -65,6 +115,7 @@
             </form>
         </div>
 
+        <br>
         <br>
         <br>
         <br>
