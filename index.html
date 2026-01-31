@@ -15,6 +15,8 @@
 
             $(document).ready(function() {
 
+                var current_socket
+                
                 console.log("DOG READY");
                 
                 function append_text(text) {
@@ -24,16 +26,22 @@
 
                 function on_submit(event) {
 
-                    var message = $("form#msg input").val()
-                    var address = $("form#address input").val()
-                    $("form#msg input").val("")
+                    var message = $("form#msg input").val();
+                    var address = $("form#address input").val();
+                    $("form#msg input").val("");
+
+                    if (current_socket == null || address != current_socket.url) {
+                        append_text("<i>Connecting..</i>")
+                        current_socket = new WebSocket(address)
+                    };
 
                     console.log(`Submit \"${message}\" to ${address}`)
                     append_text(`<b>You</b>: ${message}`)
+                    current_socket.send(`{"message": ${message}, "name": "Guy"}`)
 
                     return false;
                 }
-
+                
                 $("form#address").submit(on_submit)
                 $("form#msg").submit(on_submit)
 
