@@ -2,7 +2,6 @@
 
 <html>
 
-
     <head>
         <title>Coms</title>
 
@@ -13,7 +12,27 @@
 
             $(document).ready(function() {
 
-                console.log("DOG READY")
+                console.log("DOG READY");
+                
+                function append_text(text) {
+                    var box = document.getElementById("box")
+                    box.innerHTML = box.innerHTML + text
+                }
+
+                function on_submit(event) {
+
+                    var message = $("form#msg input").val()
+                    var address = $("form#address input").val()
+                    $("form#msg input").val("")
+
+                    console.log(`Submit \"${message}\" to ${address}`)
+                    append_text(`<b>You</b>: ${message}`)
+
+                    return false;
+                }
+
+                $("form#address").submit(on_submit)
+                $("form#msg").submit(on_submit)
 
             })
 
@@ -23,16 +42,27 @@
 
     <body>
 
-        <form id="address">
-            <label for="a">Server Address</label>
-            <input type="text" id="a">
-        </form>
+        <div style="position: fixed; min-height: 10%;">
+            <form id="address">
+                <label for="a">Server Address</label>
+                <input type="text" id="a">
+            </form>
+            
+            <form id="msg">
+                <label for="m">Message Content</label>
+                <input type="text" id="m">
+                <input type="submit" value="Send">
+            </form>
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+        <div id="box">
+
+        </div>
         
-        <form id="msg">
-            <label for="m">Message Content</label>
-            <input type="text" id="m">
-            <input type="submit">
-        </form>
 
     </body>
 
