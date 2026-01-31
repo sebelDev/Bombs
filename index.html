@@ -50,8 +50,14 @@
 
                     if (ws == null || address != ws.url) {
                         append_text("<i>Connecting..</i>")
-                        connect_ws(address)
-                        append_text("<i>Connected!</i>")
+                        
+                        try {
+                            connect_ws(address)
+                            append_text("<i>Connected!</i>")
+                        } catch {
+                            append_text("<i>Connection failed.</i>")
+                        }
+                        
                     } else {
                         append_text("<i>Already connected</i>")
                     }
