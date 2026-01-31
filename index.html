@@ -37,7 +37,6 @@
 
                     console.log(`Submit \"${message}\" to ${address}`)
                     append_text(`<b>You</b>: ${message}`)
-                    current_socket.send(`{"message": ${message}, "name": "Guy"}`)
 
                     return false;
                 }
